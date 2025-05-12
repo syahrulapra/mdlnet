@@ -1,0 +1,67 @@
+---
+import hero from "@assets/images/hero.png";
+
+import fetchApi from "@lib/strapi";
+
+const heroAPI = await fetchApi<{
+  attributes: {
+    hero: {
+      title: string;
+      description: string;
+      button: string;
+      button2: string,
+      thumbnail: {
+        data: {
+          id: number;
+          attributes: {
+            url: string;
+          };
+        };
+      };
+    };
+  };
+}>({
+  endpoint: "home-page?populate=hero.thumbnail",
+  wrappedByKey: "data"
+});
+
+const { title, description, button, button2, thumbnail } = heroAPI.attributes.hero;
+---
+
+<!-- Hero Section -->
+<section
+  id="hero"
+  class="bg-custom-blue min-h-[calc(100vh-6rem)] flex items-center text-white"
+>
+  <div class="container mx-auto px-4 py-16 md:py-0">
+    <div class="flex flex-col-reverse md:flex-row items-center justify-between">
+      <div class="md:w-1/2 mb-10 md:mb-0 fadeIn">
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-4">
+          {title}
+        </h1>
+        <p class="text-xl md:text-2xl mb-8 opacity-90">
+          {description}
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4">
+          <a
+            href="#packages"
+            class="bg-white custom-blue font-medium px-8 py-3 rounded-md hover:bg-gray-100 transition-colors text-center"
+            >{button}</a
+          >
+          <a
+            href="#contact"
+            class="bg-custom-green text-white font-medium px-8 py-3 rounded-md hover:bg-opacity-90 transition-colors text-center"
+            >{button2}</a
+          >
+        </div>
+      </div>
+      <div class="md:w-1/2 fadeIn">
+        <img
+          src={import.meta.env.PUBLIC_STRAPI_URL + thumbnail.data.attributes.url}
+          alt="Internet Cepat Ilustrasi"
+          class="w-8/12 mx-auto"
+        />
+      </div>
+    </div>
+  </div>
+</section>

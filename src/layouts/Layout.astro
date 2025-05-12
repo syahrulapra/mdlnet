@@ -1,0 +1,59 @@
+---
+import Navbar from '@components/Navbar.astro';
+import Footer from '@components/Footer.astro';
+
+import { SEO } from 'astro-seo';
+
+const { title, description, image } = Astro.props;
+
+import "@styles/global.css";
+---
+
+<!doctype html>
+<html lang="id" class="scroll-smooth">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="generator" content={Astro.generator} />
+		<SEO
+			title={title}
+			description={description}
+		/>
+		<meta property="og:title" content={title} />
+		<meta name="twitter:title" content={title} />
+		{
+		description && (
+			<>
+			<meta property="og:description" content={description} />
+			<meta name="twitter:description" content={description} />
+			</>
+		)
+		}
+		{
+			image && (
+				<>
+				<meta name="image" content={`${import.meta.env.PUBLIC_STRAPI_URL + image}`} />
+				<meta property="og:image" content={`${import.meta.env.PUBLIC_STRAPI_URL + image}`} />
+				<meta name="twitter:image" content={`${import.meta.env.PUBLIC_STRAPI_URL + image}`} />
+				</>
+			)
+		}
+		<meta name="twitter:site" content="@mdlnet" />
+		<meta name="msapplication-TileColor" content="#3852a4" />
+		<meta name="theme-color" content="#ffffff" />
+	</head>
+	<body>
+		<Navbar />
+		<main>
+			<slot />
+			<style is:global>
+				/* Improve Page speed */
+				/* https://css-tricks.com/almanac/properties/c/content-visibility/ */
+				img {
+					content-visibility: auto;
+				}
+			</style>
+		</main>
+        <Footer />
+	</body>
+</html>

@@ -1,0 +1,22 @@
+---
+import Layout from '@layouts/Layout.astro'
+import Hero from '@components/Hero.astro'
+import About from '@components/About.astro'
+import Products from '@components/Products.astro'
+import Converage from '@components/Converage.astro'
+import Testimoni from '@components/Testimoni.astro'
+import Contact from '@components/Contact.astro'
+
+import { fetchSEO } from "@lib/strapi";
+
+const { title, description, image } = await fetchSEO("home-page");
+---
+
+<Layout title={title} description={description} image={image}>
+	<Hero />
+	<About />
+	<Products />
+	<Converage />
+	<Testimoni />
+	<Contact />
+</Layout>

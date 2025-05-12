@@ -1,0 +1,126 @@
+---
+import fetchApi from "@lib/strapi";
+
+const contactAPI = await fetchApi<{
+  attributes: {
+    footer_description: {
+        title: string;
+        description: string;
+    };
+    list_contacts: {
+        data: {
+            id: number;
+            attributes: {
+                title: string;
+                description: string,
+                icon: {
+                    data: {
+                        id: number;
+                        attributes: {
+                            url: string;
+                        };
+                    };
+                }
+            };
+        }[];
+    };
+  };
+}>({
+  endpoint: "footer?populate=footer_description&populate=list_contacts.icon",
+  wrappedByKey: "data"
+});
+
+const { title, description } = contactAPI.attributes.footer_description;
+const contactItems = contactAPI.attributes.list_contacts.data.map(item => item.attributes);
+---
+<!-- Footer -->
+<footer class="bg-zinc-900 text-white">
+    <div class="container mx-auto px-4 py-12 flex justify-between items-center">
+        <div
+            class="grid grid-cols-1 items-start space-y-8 md:grid-cols-4 md:gap-8 md:space-y-0"
+        >
+            <div
+                class="flex items-start justify-start md:items-center md:justify-center"
+            >
+                <div class="flex flex-col gap-4">
+                    <h1 class="text-xl font-semibold">{title}</h1>
+                    <p>
+                        {description}
+                    </p>
+                </div>
+            </div>
+
+            <div class="col-span-2 flex items-start justify-start gap-4">
+                <div
+                    class="flex w-full items-start justify-start md:items-center md:justify-center"
+                >
+                    <div class="flex flex-col gap-4">
+                        <h1 class="text-xl font-semibold">Navigasi</h1>
+                        <ul class="flex flex-col gap-2">
+                            <li>
+                                <a href="/">Beranda</a>
+                            </li>
+                            <li>
+                                <a href="/about">Tentang Kami</a>
+                            </li>
+                            <li>
+                                <a href="/products">Paket Internet</a>
+                            </li>
+                            <li>
+                                <a href="/contact">Kontak Kami</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div
+                    class="flex w-full items-start justify-start md:items-center md:justify-center"
+                >
+                    <div class="flex flex-col gap-4">
+                        <h1 class="text-xl font-semibold">Lainnya</h1>
+                        <ul class="flex flex-col gap-2">
+                            <li>
+                                <a href="/#suports">Layanan Pelanggan</a>
+                            </li>
+                            <li>
+                                <a href="/terms-of-service">Syarat dan Ketentuan</a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div
+                class="flex flex-col items-start justify-start gap-4 md:justify-center"
+            >
+                <h1 class="text-xl font-semibold">Kontak</h1>
+                <ul class="flex flex-col gap-4">
+                    {
+                        contactItems.map((item) => (
+                            <li>
+                                <a
+                                    class="flex items-center gap-2"
+                                    href={
+                                        item.title === "Email"
+                                        ? `mailto:${item.description}`
+                                        : `https://wa.me/${item.description}`
+                                    }
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    {item.title !== "Alamat" && (
+                                        <div class="w-6 h-6 bg-white mask mask-icon" style={{ maskImage: `url(${import.meta.env.PUBLIC_STRAPI_URL}${item.icon?.data?.attributes?.url})` }} />
+                                    )}
+                                    <span>{item.description}</span>
+                                </a>
+                            </li>
+                        ))
+                    }
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="flex items-center justify-center p-4 text-center">
+        <p>Copyright &copy; 2025 MDLNET</p>
+    </div>
+</footer>

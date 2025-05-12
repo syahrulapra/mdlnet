@@ -1,0 +1,96 @@
+---
+import location from "@assets/images/location-vector.png"
+
+import fetchApi from "@lib/strapi";
+
+const converageAPI = await fetchApi<{
+  attributes: {
+    converage: {
+      title: string;
+      description: string,
+      thumbnail: {
+        data: {
+          id: number;
+          attributes: {
+            url: string;
+          };
+        };
+      }
+      list_converages: {
+        data: {
+          id: number;
+          attributes: {
+            title: string;
+            description: string;
+          };
+        }[];
+      };
+    };
+  };
+}>({
+  endpoint: "home-page?populate[converage][populate]=thumbnail&populate[converage][populate]=list_converages",
+  wrappedByKey: "data"
+});
+
+const { title, description, thumbnail, list_converages } = converageAPI.attributes.converage;
+const converageItems = list_converages.data.map(item => item.attributes);
+---
+
+<!-- Coverage Section -->
+<section class="section-padding bg-white">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 custom-blue">
+                {title}
+            </h2>
+            <div class="w-16 h-1 bg-custom-green mx-auto mb-8"></div>
+            <p class="text-gray-600 text-lg max-w-3xl mx-auto">
+                {description}
+            </p>
+        </div>
+
+        <div class="flex flex-col lg:flex-row items-center">
+            <div class="xl:w-2/5 mb-6 lg:mb-0 lg:pr-8 w-full">
+                <img
+                    src={import.meta.env.PUBLIC_STRAPI_URL + thumbnail.data.attributes.url}
+                    alt="Peta Jangkauan"
+                    class="rounded-xl mx-auto"
+                />
+            </div>
+            <div class="lg:w-4/5 w-full">
+                <div class="grid grid-cols-2 gap-4">
+                    {converageItems.map((item) => (
+                        <div class="p-4 bg-gray-50 rounded-lg shadow-sm">
+                            <h3 class="font-semibold mb-2 custom-blue">{item.title}</h3>
+                            <p class="text-gray-600">{item.description}</p>
+                        </div>
+                    ))}
+                </div>
+                <div class="mt-6">
+                    <p class="mb-4 text-gray-600">
+                        Kami terus memperluas jangkauan layanan. Jika area Anda
+                        belum tercantum, silakan hubungi kami untuk informasi
+                        terbaru.
+                    </p>
+                    <a
+                        href="#contact"
+                        class="inline-flex items-center custom-blue font-medium hover:underline"
+                    >
+                        Cek Ketersediaan
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            class="h-5 w-5 ml-1"
+                            viewBox="0 0 20 20"
+                            fill="currentColor"
+                        >
+                            <path
+                                fill-rule="evenodd"
+                                d="M12.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-2.293-2.293a1 1 0 010-1.414z"
+                                clip-rule="evenodd"></path>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

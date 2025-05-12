@@ -1,0 +1,115 @@
+---
+import fetchApi from "@lib/strapi";
+
+const productAPI = await fetchApi<{
+    attributes: {
+        products: {
+            title: string;
+            description: string;
+            list_products: {
+                data: {
+                    id: number;
+                    attributes: {
+                        title: string;
+                        speed: string;
+                        price: number;
+                        popular: boolean;
+                        specifications: {
+                            data: {
+                                id: number;
+                                attributes: {
+                                    description: string;
+                                };
+                            }[];
+                        };
+                    };
+                }[];
+            };
+        };
+    };
+}>({
+    endpoint:
+        "home-page?populate[products][populate]=list_products.specifications",
+    wrappedByKey: "data",
+});
+
+const { title, description, list_products } = productAPI.attributes.products;
+const productItems = list_products.data.map((item) => {
+    const attr = item.attributes;
+    return {
+        ...attr,
+        specifications: Array.isArray(attr.specifications) ? attr.specifications : [],
+    };
+});
+---
+
+<!-- Packages Section -->
+<section id="packages" class="section-padding bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 custom-blue">
+                {title}
+            </h2>
+            <div class="w-16 h-1 bg-custom-green mx-auto mb-8"></div>
+            <p class="text-gray-600 text-lg max-w-3xl mx-auto">
+                {description}
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            {
+                productItems.map((product) => (
+                    <div class={`package-card bg-white rounded-lg shadow-md ${product.popular ? "bg-custom-blue transform lg:scale-110 text-white" : ""}`}>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold text-center">
+                                {product.title}
+                            </h3>
+                            <div class="text-center my-4">
+                                <h3 class="text-xl font-bold text-center">
+                                    {product.speed}
+                                </h3>
+                            </div>
+                            <h4 class="font-medium text-center text-xl">
+                                <span class={`text-2xl font-semibold ${product.popular ? "text-white" : "custom-blue"}`}>
+                                    Rp{product.price.toLocaleString("id-ID")}
+                                </span>
+                                /Bulan
+                            </h4>
+                        </div>
+                        <div class="p-6 flex flex-col justify-between">
+                            <ul class="space-y-4">
+                                {product.specifications.map((spec: {id: number; description: string}) => (
+                                    <li class="flex items-center" {...{ key: spec.id }}>
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            class="h-5 w-5 custom-green mr-3"
+                                            viewBox="0 0 20 20"
+                                            fill="currentColor"
+                                        >
+                                            <path
+                                                fill-rule="evenodd"
+                                                d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                                clip-rule="evenodd"
+                                            />
+                                        </svg>
+                                        <span class={`${product.popular ? "text-white" : "text-gray-600"}`}>
+                                            {spec.description}
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+                            <div class="mt-8">
+                                <a
+                                    href="#contact"
+                                    class={`block text-center font-medium px-4 py-3 rounded-md hover:bg-opacity-90 transition-colors ${product.popular ? "bg-white text-gray-600" : "bg-custom-blue text-white"}`}
+                                >
+                                    Pilih Paket
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                ))
+            }
+        </div>
+    </div>
+</section>

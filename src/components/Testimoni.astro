@@ -1,0 +1,55 @@
+---
+import fetchApi from "@lib/strapi";
+
+const testimoniAPI = await fetchApi<{
+  attributes: {
+    testimoni: {
+      title: string;
+      description: string;
+      list_testimonis: {
+        data: {
+          id: number;
+          attributes: {
+            client: string;
+            type: string;
+            description: string;
+          };
+        }[];
+      };
+    };
+  };
+}>({
+  endpoint: "home-page?populate[testimoni][populate]=list_testimonis",
+  wrappedByKey: "data"
+});
+
+const { title, description, list_testimonis } = testimoniAPI.attributes.testimoni;
+const testimoniItems = list_testimonis.data.map(item => item.attributes);
+---
+
+<!-- Testimonials Section -->
+<section class="section-padding bg-gray-50">
+    <div class="container mx-auto px-4">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4 custom-blue">
+                {title}
+            </h2>
+            <div class="w-16 h-1 bg-custom-green mx-auto mb-8"></div>
+            <p class="text-gray-600 text-lg max-w-3xl mx-auto">
+                {description}
+            </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimoniItems.map((item) => (
+                <div class="bg-white p-6 rounded-lg shadow-md">
+                    <div class="mb-4">
+                        <h3 class="font-semibold">{item.client}</h3>
+                        <p class="text-gray-500 text-sm">{item.type}</p>
+                    </div>
+                    <p class="text-gray-600 mb-4">{item.description}</p>
+                </div>
+            ))}
+        </div>
+    </div>
+</section>
