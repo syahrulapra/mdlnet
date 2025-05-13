@@ -2,49 +2,36 @@
 import fetchApi from "@lib/strapi";
 
 const productAPI = await fetchApi<{
-    attributes: {
-        products: {
+    product: {
+        title: string;
+        description: string;
+        list_products: {
+            id: number;
             title: string;
-            description: string;
-            list_products: {
-                data: {
-                    id: number;
-                    attributes: {
-                        title: string;
-                        speed: string;
-                        price: number;
-                        popular: boolean;
-                        specifications: {
-                            data: {
-                                id: number;
-                                attributes: {
-                                    description: string;
-                                };
-                            }[];
-                        };
-                    };
-                }[];
-            };
-        };
+            speed: string;
+            price: number;
+            popular: boolean;
+            specifications: {
+                id: number;
+                description: string;
+            }[];
+        }[];
     };
 }>({
     endpoint:
-        "home-page?populate[products][populate]=list_products.specifications",
+        "home-page?populate[product][populate]=list_products.specifications",
     wrappedByKey: "data",
 });
 
-const { title, description, list_products } = productAPI.attributes.products;
-const productItems = list_products.data.map((item) => {
-    const attr = item.attributes;
-    return {
-        ...attr,
-        specifications: Array.isArray(attr.specifications) ? attr.specifications : [],
-    };
-});
+const { title, description, list_products } = productAPI.product;
+const productItems = list_products.map((item) => ({
+    ...item,
+    specifications: Array.isArray(item.specifications) ? item.specifications : [],
+}));
 ---
 
 <!-- Packages Section -->
-<section id="packages" class="section-padding bg-gray-50">
+<section id="produk" class="section-padding bg-gray-50">
     <div class="container mx-auto px-4">
         <div class="text-center mb-16">
             <h2 class="text-3xl md:text-4xl font-bold mb-4 custom-blue">
@@ -100,7 +87,7 @@ const productItems = list_products.data.map((item) => {
                             </ul>
                             <div class="mt-8">
                                 <a
-                                    href="#contact"
+                                    href="#kontak"
                                     class={`block text-center font-medium px-4 py-3 rounded-md hover:bg-opacity-90 transition-colors ${product.popular ? "bg-white text-gray-600" : "bg-custom-blue text-white"}`}
                                 >
                                     Pilih Paket

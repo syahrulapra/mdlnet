@@ -1,23 +1,19 @@
 ---
-import hero from "@assets/images/hero.png";
-
 import fetchApi from "@lib/strapi";
 
 const heroAPI = await fetchApi<{
-  attributes: {
-    hero: {
-      title: string;
-      description: string;
-      button: string;
-      button2: string,
-      thumbnail: {
-        data: {
-          id: number;
-          attributes: {
-            url: string;
-          };
-        };
-      };
+  id: number;
+  hero: {
+    title: string;
+    description: string;
+    button: string;
+    button2: string;
+    thumbnail: {
+      formats: {
+        large: {
+          url: string;
+        }
+      }
     };
   };
 }>({
@@ -25,12 +21,12 @@ const heroAPI = await fetchApi<{
   wrappedByKey: "data"
 });
 
-const { title, description, button, button2, thumbnail } = heroAPI.attributes.hero;
+const { title, description, button, button2, thumbnail } = heroAPI.hero;
 ---
 
 <!-- Hero Section -->
 <section
-  id="hero"
+  id="beranda"
   class="bg-custom-blue min-h-[calc(100vh-6rem)] flex items-center text-white"
 >
   <div class="container mx-auto px-4 py-16 md:py-0">
@@ -44,20 +40,20 @@ const { title, description, button, button2, thumbnail } = heroAPI.attributes.he
         </p>
         <div class="flex flex-col sm:flex-row gap-4">
           <a
-            href="#packages"
+            href="#produk"
             class="bg-white custom-blue font-medium px-8 py-3 rounded-md hover:bg-gray-100 transition-colors text-center"
             >{button}</a
           >
           <a
-            href="#contact"
-            class="bg-custom-green text-white font-medium px-8 py-3 rounded-md hover:bg-opacity-90 transition-colors text-center"
+            href="#kontak"
+            class="bg-[#e67e00] text-white font-medium px-8 py-3 rounded-md hover:bg-opacity-90 transition-colors text-center"
             >{button2}</a
           >
         </div>
       </div>
       <div class="md:w-1/2 fadeIn">
         <img
-          src={import.meta.env.PUBLIC_STRAPI_URL + thumbnail.data.attributes.url}
+          src={import.meta.env.PUBLIC_STRAPI_URL + thumbnail.formats.large.url}
           alt="Internet Cepat Ilustrasi"
           class="w-8/12 mx-auto"
         />

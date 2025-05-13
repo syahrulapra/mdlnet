@@ -1,39 +1,29 @@
 ---
-import location from "@assets/images/location-vector.png"
-
 import fetchApi from "@lib/strapi";
 
 const converageAPI = await fetchApi<{
-  attributes: {
-    converage: {
-      title: string;
-      description: string,
-      thumbnail: {
-        data: {
-          id: number;
-          attributes: {
-            url: string;
-          };
-        };
+  converage: {
+    title: string;
+    description: string,
+    thumbnail: {
+      formats: {
+        large: {
+          url: string;
+        }
       }
-      list_converages: {
-        data: {
-          id: number;
-          attributes: {
-            title: string;
-            description: string;
-          };
-        }[];
-      };
-    };
+    }
+    list_converages: {
+      title: string;
+      description: string;
+    }[];
   };
 }>({
   endpoint: "home-page?populate[converage][populate]=thumbnail&populate[converage][populate]=list_converages",
   wrappedByKey: "data"
 });
 
-const { title, description, thumbnail, list_converages } = converageAPI.attributes.converage;
-const converageItems = list_converages.data.map(item => item.attributes);
+const { title, description, thumbnail, list_converages } = converageAPI.converage;
+const converageItems = list_converages.map(item => item);
 ---
 
 <!-- Coverage Section -->
@@ -52,7 +42,7 @@ const converageItems = list_converages.data.map(item => item.attributes);
         <div class="flex flex-col lg:flex-row items-center">
             <div class="xl:w-2/5 mb-6 lg:mb-0 lg:pr-8 w-full">
                 <img
-                    src={import.meta.env.PUBLIC_STRAPI_URL + thumbnail.data.attributes.url}
+                    src={import.meta.env.PUBLIC_STRAPI_URL + thumbnail.formats.large.url}
                     alt="Peta Jangkauan"
                     class="rounded-xl mx-auto"
                 />
@@ -73,7 +63,7 @@ const converageItems = list_converages.data.map(item => item.attributes);
                         terbaru.
                     </p>
                     <a
-                        href="#contact"
+                        href="#kontak"
                         class="inline-flex items-center custom-blue font-medium hover:underline"
                     >
                         Cek Ketersediaan

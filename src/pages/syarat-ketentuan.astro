@@ -1,0 +1,146 @@
+---
+import Layout from '@layouts/Layout.astro';
+import fetchApi, { fetchSEO } from "@lib/strapi";
+import { marked } from 'marked';
+
+const dataAPI = await fetchApi<{
+    title: string;
+    content: string;
+    updatedAt: string;
+}>({
+  endpoint: "term-and-condition",
+  wrappedByKey: "data"
+});
+
+const { title: pageTitle, content, updatedAt } = dataAPI;
+
+// Parse markdown content
+const htmlContent = marked(content);
+
+// Format date
+const formattedDate = new Date(updatedAt).toLocaleDateString('id-ID', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric'
+});
+
+const { title, description, image } = await fetchSEO("term-and-condition");
+---
+
+<Layout title={title} description={description} image={image}>
+  <div class="section-padding bg-gray-50 py-12">
+    <div class="container mx-auto px-4 max-w-4xl">
+      <div class="bg-white rounded-lg shadow-sm p-8">
+        <h1 class="text-4xl font-bold mb-2 text-gray-900">{pageTitle}</h1>
+        <p class="text-sm text-gray-500 mb-6">Terakhir diperbarui: {formattedDate}</p>
+        <div class="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-700 prose-a:text-blue-600 hover:prose-a:text-blue-800 prose-li:text-gray-700" set:html={htmlContent}></div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<style is:global>
+  .prose h2 {
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    font-size: 1.75rem;
+    color: #2d3748;
+    border-bottom: 1px solid #edf2f7;
+    padding-bottom: 0.5rem;
+  }
+  
+  .prose h3 {
+    margin-top: 1.25rem;
+    margin-bottom: 0.75rem;
+    font-size: 1.5rem;
+    color: #2d3748;
+  }
+  
+  .prose p {
+    margin-bottom: 1rem;
+    line-height: 1.7;
+    color: #4a5568;
+  }
+  
+  /* Custom list styling */
+  .prose ul {
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    padding-left: 1rem;
+    list-style-type: none;
+  }
+  
+  .prose ol {
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    padding-left: 1.5rem;
+  }
+  
+  .prose ul li {
+    margin-bottom: 0.5rem;
+    position: relative;
+    padding-left: 1.5rem;
+  }
+  
+  .prose ul li::before {
+    content: "•";
+    color: #2d3748;
+    font-weight: bold;
+    font-size: 1.2em;
+    position: absolute;
+    left: 0;
+    top: -0.1em;
+  }
+  
+  .prose ol li {
+    margin-bottom: 0.5rem;
+    padding-left: 0.5rem;
+  }
+  
+  .prose blockquote {
+    border-left: 4px solid #e2e8f0;
+    padding-left: 1rem;
+    font-style: italic;
+    margin: 1rem 0;
+    color: #718096;
+    background-color: #f7fafc;
+    padding: 1rem;
+    border-radius: 0.25rem;
+  }
+  
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.25rem;
+    overflow: hidden;
+  }
+  
+  .prose table th, .prose table td {
+    border: 1px solid #e2e8f0;
+    padding: 0.75rem;
+    text-align: left;
+  }
+  
+  .prose table th {
+    background-color: #f7fafc;
+    font-weight: bold;
+    color: #2d3748;
+  }
+  
+  .prose table tr:nth-child(even) {
+    background-color: #f7fafc;
+  }
+  
+  /* Links styling */
+  .prose a {
+    text-decoration: none;
+    border-bottom: 1px dotted #4299e1;
+    transition: all 0.2s ease;
+  }
+  
+  .prose a:hover {
+    border-bottom: 1px solid #2b6cb0;
+  }
+</style>

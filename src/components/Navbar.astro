@@ -5,15 +5,15 @@ import { Astronav, MenuIcon, MenuItems } from 'astro-navbar';
 const menuitems = [
 	{
 		title: 'Tentang Kami',
-		path: '#about',
+		path: '/#tentang',
 	},
 	{
 		title: 'Paket Internet',
-		path: '#packages',
+		path: '/#produk',
 	},
 	{
 		title: 'Kontak Kami',
-		path: '#contact',
+		path: '/#kontak',
 	},
 ];
 ---
@@ -26,7 +26,7 @@ const menuitems = [
     <div class="container mx-auto px-4 py-4 flex flex-col justify-between items-center lg:flex-row">
         <Astronav>
             <div class="flex w-full items-center justify-between lg:w-auto">
-                <a href="#hero" class="flex items-center">
+                <a href="/#beranda" class="flex items-center">
                     <img class="h-16" src={brand.src} alt="Logo MDLNET" />
                 </a>
                 <div class="block lg:hidden">

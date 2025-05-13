@@ -2,18 +2,10 @@ export interface SEOAPI {
   title: string;
   description: string | null;
   image: {
-    data: {
-      id: number;
-      attributes: {
-        url: string;
-      };
-    };
+    url: string;
   };
 }
 
 export interface PageAPI {
-  id: number;
-  attributes?: {
-    seo: SEOAPI | null;
-  };
+  seo: SEOAPI | null;
 }

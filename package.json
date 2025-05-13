@@ -14,6 +14,7 @@
     "astro": "^5.7.11",
     "astro-navbar": "^2.3.9",
     "astro-seo": "^0.8.4",
+    "marked": "^15.0.11",
     "tailwindcss": "^4.1.5"
   }
 }

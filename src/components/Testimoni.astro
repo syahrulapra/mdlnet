@@ -2,29 +2,23 @@
 import fetchApi from "@lib/strapi";
 
 const testimoniAPI = await fetchApi<{
-  attributes: {
-    testimoni: {
-      title: string;
+  testimoni: {
+    title: string;
+    description: string;
+    list_testimonis: {
+      id: number;
+      client: string;
+      type: string;
       description: string;
-      list_testimonis: {
-        data: {
-          id: number;
-          attributes: {
-            client: string;
-            type: string;
-            description: string;
-          };
-        }[];
-      };
-    };
+    }[];
   };
 }>({
   endpoint: "home-page?populate[testimoni][populate]=list_testimonis",
   wrappedByKey: "data"
 });
 
-const { title, description, list_testimonis } = testimoniAPI.attributes.testimoni;
-const testimoniItems = list_testimonis.data.map(item => item.attributes);
+const { title, description, list_testimonis } = testimoniAPI.testimoni;
+const testimoniItems = list_testimonis.map(item => item);
 ---
 
 <!-- Testimonials Section -->

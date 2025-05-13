@@ -54,13 +54,13 @@ export async function fetchSEO(
     wrappedByKey: "data",
   });
 
-  const seoAttributes = response?.attributes?.seo;
+  const seoAttributes = response.seo;
 
   return {
     title: seoAttributes?.title || "",
     description: seoAttributes?.description || "",
-    image: seoAttributes?.image
-      ? seoAttributes.image.data.attributes.url
+    image: seoAttributes?.image.url
+      ? seoAttributes.image.url
       : null,
   };
 }

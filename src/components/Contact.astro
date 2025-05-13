@@ -2,62 +2,44 @@
 import fetchApi from "@lib/strapi";
 
 const productAPI = await fetchApi<{
-    attributes: {
-        products: {
-            list_products: {
-                data: {
-                    id: number;
-                    attributes: {
-                        title: string;
-                    };
-                }[];
-            };
-        };
+    product: {
+      list_products: {
+        id: number;
+        title: string;
+      }[];
     };
 }>({
     endpoint:
-        "home-page?populate[products][populate]=list_products",
+        "home-page?populate[product][populate]=list_products",
     wrappedByKey: "data",
 });
 
-const { list_products } = productAPI.attributes.products;
-const productItems = list_products.data.map(item => item.attributes);
+const { list_products } = productAPI.product;
+const productItems = list_products.map(item => item);
 
 const contactAPI = await fetchApi<{
-  attributes: {
-    contact: {
+  contact: {
+    title: string;
+    description: string;
+    list_contacts: {
       title: string;
-      description: string;
-      list_contacts: {
-        data: {
-          id: number;
-          attributes: {
-            title: string;
-            description: string,
-            icon: {
-              data: {
-                id: number;
-                attributes: {
-                  url: string;
-                };
-              };
-            };
-          };
-        }[];
+      description: string,
+      icon: {
+        url: string;
       };
-    };
+    }[];
   };
 }>({
   endpoint: "home-page?populate[contact][populate]=list_contacts.icon",
   wrappedByKey: "data"
 });
 
-const { title, description, list_contacts } = contactAPI.attributes.contact;
-const contactItems = list_contacts.data.map(item => item.attributes);
+const { title, description, list_contacts } = contactAPI.contact;
+const contactItems = list_contacts.map(item => item);
 ---
 
 <!-- Contact Section -->
-<section id="contact" class="section-padding bg-white">
+<section id="kontak" class="section-padding bg-white">
   <div class="container mx-auto px-4">
     <div class="text-center mb-16">
       <h2 class="text-3xl md:text-4xl font-bold mb-4 custom-blue">
@@ -72,7 +54,7 @@ const contactItems = list_contacts.data.map(item => item.attributes);
     <div class="flex flex-col md:flex-row">
       {/* Form Section */}
       <div class="md:w-1/2 mb-8 md:mb-0 md:pr-8">
-        <form class="bg-gray-50 p-6 rounded-lg shadow-md">
+        <form id="contactForm" class="bg-gray-50 p-6 rounded-lg shadow-md">
           <div class="mb-4">
             <label for="name" class="block text-gray-700 font-medium mb-2">Nama Lengkap</label>
             <input type="text" id="name" class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-custom-blue" />
@@ -109,7 +91,7 @@ const contactItems = list_contacts.data.map(item => item.attributes);
           <div class="space-y-6">
             {contactItems.map((item) => (
               <div class="flex items-start">
-                <div class="w-6 h-6 bg-custom-blue mask mask-icon" style={{ maskImage: `url(${import.meta.env.PUBLIC_STRAPI_URL}${item.icon?.data?.attributes?.url})` }} />
+                <div class="w-6 h-6 bg-custom-blue mask mask-icon" style={{ maskImage: `url(${import.meta.env.PUBLIC_STRAPI_URL}${item.icon.url})` }} />
                 <div class="ml-4">
                   <p class="font-medium">{item.title}</p>
                   <p>{item.description}</p>
@@ -122,3 +104,50 @@ const contactItems = list_contacts.data.map(item => item.attributes);
     </div>
   </div>
 </section>
+
+<script>
+  import { STRAPI_URL } from "astro:env/client";
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const form = document.querySelector("#contactForm");
+
+    if (form) {
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+
+        const name = (document.getElementById("name") as HTMLInputElement)?.value.trim() ?? "";
+        const email = (document.getElementById("email") as HTMLInputElement)?.value.trim() ?? "";
+        const phone = (document.getElementById("phone") as HTMLInputElement)?.value.trim() ?? "";
+        const service = (document.getElementById("service") as HTMLInputElement)?.value.trim() ?? "";
+        const message = (document.getElementById("message") as HTMLTextAreaElement)?.value.trim() ?? "";
+
+        const data = { data: { name, email, phone, service, message } };
+
+        // Kirim ke endpoint email
+        try {
+          const response = await fetch(`${STRAPI_URL}/api/email-receiveds`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          });
+
+          if (!response.ok) {
+            console.error('Gagal mengirim ke email:', response.statusText);
+          }
+        } catch (error) {
+          console.error('Gagal mengirim ke email:', error);
+        }
+
+        // Format pesan WhatsApp
+        const whatsappText = encodeURIComponent(
+          `Halo, saya ${name}\nEmail: ${email}\nNo HP: ${phone}\nPaket: ${service}\nPesan: ${message}`
+        );
+        const whatsappURL = `https://wa.me/6281274018345?text=${whatsappText}`;
+
+        window.open(whatsappURL, '_blank');
+      });
+    } else {
+      console.error("Form dengan ID #contactForm tidak ditemukan.");
+    }
+  });
+</script>
